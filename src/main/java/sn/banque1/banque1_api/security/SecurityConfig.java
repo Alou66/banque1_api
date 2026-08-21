@@ -17,6 +17,7 @@ public class SecurityConfig {
 
         private final JwtService jwtService;
         private final CustomUserDetailsService customUserDetailsService;
+        private final InternalApiKeyFilter internalApiKeyFilter;
 
         @Bean
         public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -25,10 +26,19 @@ public class SecurityConfig {
                                 .sessionManagement(session -> session
                                                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                                 .authorizeHttpRequests(auth -> auth
-                                                .requestMatchers("/api/auth/**", "/swagger-ui/**", "/v3/api-docs/**")
+                                                .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**")
                                                 .permitAll()
                                                 .requestMatchers(HttpMethod.POST, "/api/comptes").permitAll()
+                                                // Protégé par InternalApiKeyFilter, pas par JWT (appelé par
+                                                // auth_api, service à service)
+                                                .requestMatchers(HttpMethod.POST, "/api/comptes/authenticate")
+                                                .permitAll()
+                                                // Protégé par InternalApiKeyFilter, pas par JWT (appelé par
+                                                // gestion_service_api, service à service)
+                                                .requestMatchers(HttpMethod.POST, "/api/transactions/paiement-externe")
+                                                .permitAll()
                                                 .anyRequest().authenticated())
+                                .addFilterBefore(internalApiKeyFilter, UsernamePasswordAuthenticationFilter.class)
                                 .addFilterBefore(
                                                 new JwtAuthenticationFilter(jwtService, customUserDetailsService),
                                                 UsernamePasswordAuthenticationFilter.class)

@@ -19,9 +19,11 @@ public class CompteRequest {
     private String adresse;
 
     @NotBlank(message = "Le téléphone est obligatoire")
+    @Pattern(regexp = "^(77|78|70)[0-9]{7}$", message = "Le téléphone doit commencer par 77, 78 ou 70 et contenir 9 chiffres au total")
     private String telephone;
 
     @NotBlank(message = "Le pin est obligatoire")
+    @Pattern(regexp = "^[0-9]{4}$", message = "Le pin doit contenir exactement 4 chiffres")
     private String pin;
 
     @Pattern(regexp = "^[0-9]{10}$", message = "Le numéro de pièce doit contenir exactement 10 chiffres")

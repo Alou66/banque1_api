@@ -1,6 +1,5 @@
 package sn.banque1.banque1_api.service;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
@@ -17,10 +16,6 @@ public class CompteService {
 
     public Compte save(Compte compte) {
         return compteRepository.save(compte);
-    }
-
-    public List<Compte> findAllComptes() {
-        return compteRepository.findAll();
     }
 
     public Optional<Compte> findByTelephone(String telephone) {

@@ -35,7 +35,8 @@ public class CompteMapper {
                 compte.getPrenom(),
                 compte.getNom(),
                 compte.getAdresse(),
-                compte.getTelephone());
+                compte.getTelephone(),
+                compte.isActif());
     }
 
     private String normalizeTelephone(String telephone) {

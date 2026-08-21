@@ -3,8 +3,10 @@ package sn.banque1.banque1_api.helper;
 import java.util.List;
 
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import sn.banque1.banque1_api.dto.PaiementExterneRequest;
 import sn.banque1.banque1_api.dto.TransactionRequest;
 import sn.banque1.banque1_api.dto.TransactionResponse;
 import sn.banque1.banque1_api.exception.BadRequestException;
@@ -22,10 +24,11 @@ public class TransactionHelper {
     private final TransactionService transactionService;
     private final TransactionMapper transactionMapper;
     private final CompteService compteService;
+    private final CompteHelper compteHelper;
 
-    public TransactionResponse creerDepot(TransactionRequest request) {
+    public TransactionResponse creerDepot(String telephone, TransactionRequest request) {
 
-        Compte compte = trouverCompte(request.getTelephone());
+        Compte compte = trouverCompte(telephone);
 
         effectuerDepot(compte, request.getMontant());
 
@@ -37,9 +40,9 @@ public class TransactionHelper {
         return transactionMapper.toResponse(transaction);
     }
 
-    public TransactionResponse creerRetrait(TransactionRequest request) {
+    public TransactionResponse creerRetrait(String telephone, TransactionRequest request) {
 
-        Compte compte = trouverCompte(request.getTelephone());
+        Compte compte = trouverCompte(telephone);
 
         effectuerRetrait(compte, request.getMontant());
 
@@ -51,9 +54,30 @@ public class TransactionHelper {
         return transactionMapper.toResponse(transaction);
     }
 
-    public TransactionResponse creerPaiement(TransactionRequest request) {
+    public TransactionResponse creerPaiement(String telephone, TransactionRequest request) {
 
-        Compte compte = trouverCompte(request.getTelephone());
+        Compte compte = trouverCompte(telephone);
+
+        effectuerPaiement(compte, request.getMontant());
+
+        Transaction transaction = creerTransaction(
+                compte,
+                request.getMontant(),
+                TypeTransaction.PAIEMENT);
+
+        return transactionMapper.toResponse(transaction);
+    }
+
+    /**
+     * Paiement d'une prestation par un service tiers (gestion_service_api) : le
+     * client n'a pas de session JWT ici, l'identité est prouvée par téléphone+PIN.
+     * Vérification du PIN et débit dans la même transaction, pour ne jamais
+     * débiter un compte dont le PIN n'a pas été confirmé au même instant.
+     */
+    @Transactional
+    public TransactionResponse payerAvecPin(PaiementExterneRequest request) {
+
+        Compte compte = compteHelper.verifierPin(request.getTelephone(), request.getPin());
 
         effectuerPaiement(compte, request.getMontant());
 

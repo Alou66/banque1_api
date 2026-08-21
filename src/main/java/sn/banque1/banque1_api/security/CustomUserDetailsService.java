@@ -16,9 +16,15 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String telephone) throws UsernameNotFoundException {
-        return compteRepository.findByTelephone(telephone)
-                .map(this::toUserDetails)
+        sn.banque1.banque1_api.model.Compte compte = compteRepository.findByTelephone(telephone)
                 .orElseThrow(() -> new UsernameNotFoundException("Compte non trouvé"));
+
+        if (!compte.isActif()) {
+            // Refuse même un JWT non expiré une fois le compte désactivé.
+            throw new UsernameNotFoundException("Compte désactivé");
+        }
+
+        return toUserDetails(compte);
     }
 
     private UserDetails toUserDetails(sn.banque1.banque1_api.model.Compte compte) {

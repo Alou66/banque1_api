@@ -31,3 +31,7 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Secrets ###
+application-secrets.yaml
+!application-secrets.yaml.example

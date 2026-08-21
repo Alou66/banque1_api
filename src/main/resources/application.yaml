@@ -2,10 +2,18 @@ spring:
   application:
     name: banque1_api
 
+  # Fichier local (jamais commité, voir .gitignore) contenant les vraies valeurs
+  # de DB_URL/DB_USERNAME/DB_PASSWORD/JWT_SECRET/INTERNAL_API_KEY. Chargé quel que
+  # soit le mode de lancement (terminal, bouton Run/Debug de l'IDE, etc.), pas besoin
+  # d'exporter des variables d'environnement à la main.
+  config:
+    import: optional:file:./application-secrets.yaml
+
   datasource:
-    url: jdbc:postgresql://localhost:5432/banque1_api_db
-    username: alassane
-    password: alou123
+    # URL Neon complète, ex: jdbc:postgresql://ep-xxx.eu-central-1.aws.neon.tech/banque1_api_db?sslmode=require
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
 
   jpa:
@@ -20,4 +28,20 @@ springdoc:
   swagger-ui:
     path: /swagger-ui.html
 
-server: port:8080
+server:
+  port: 8080
+
+# Doit être strictement identique à jwt.secret dans auth_api/application.yaml :
+# c'est auth_api qui émet les JWT, banque1_api se contente de les valider.
+jwt:
+  secret: ${JWT_SECRET}
+
+# Doit être strictement identique à internal.api.key dans auth_api/application.yaml.
+# Utilisée pour sécuriser les appels serveur-à-serveur entre banque1_api et auth_api.
+internal:
+  api:
+    key: ${INTERNAL_API_KEY}
+
+auth:
+  api:
+    url: ${AUTH_API_URL:http://localhost:8081}

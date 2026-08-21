@@ -65,6 +65,10 @@ public class Compte {
     @Column(nullable = false)
     private String pin;
 
+    @Builder.Default
+    @Column(nullable = false)
+    private boolean actif = true;
+
     @OneToMany(mappedBy = "compte")
     private List<Transaction> transactions;
 }

@@ -1,30 +1,27 @@
 package sn.banque1.banque1_api.security;
 
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
+/**
+ * banque1_api ne fait plus qu'une chose avec les JWT : les valider. C'est
+ * auth_api qui les émet (jwt.secret doit être identique dans les deux
+ * application.yaml).
+ */
 @Service
 public class JwtService {
 
-    private static final String SECRET = "mon_secret_tres_long_pour_le_projet_banque_mon_secret";
-
-    public String generateToken(String telephone) {
-        return Jwts.builder()
-                .setSubject(telephone)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 86400000))
-                .signWith(Keys.hmacShaKeyFor(SECRET.getBytes(StandardCharsets.UTF_8)), SignatureAlgorithm.HS256)
-                .compact();
-    }
+    @Value("${jwt.secret}")
+    private String secret;
 
     public String extractUsername(String token) {
         return Jwts.parserBuilder()
-                .setSigningKey(Keys.hmacShaKeyFor(SECRET.getBytes(StandardCharsets.UTF_8)))
+                .setSigningKey(Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8)))
                 .build()
                 .parseClaimsJws(token)
                 .getBody()
@@ -42,7 +39,7 @@ public class JwtService {
 
     private boolean isExpired(String token) {
         Date expiration = Jwts.parserBuilder()
-                .setSigningKey(Keys.hmacShaKeyFor(SECRET.getBytes(StandardCharsets.UTF_8)))
+                .setSigningKey(Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8)))
                 .build()
                 .parseClaimsJws(token)
                 .getBody()
