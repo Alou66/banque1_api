@@ -5,11 +5,14 @@ import org.springframework.stereotype.Component;
 import lombok.RequiredArgsConstructor;
 import sn.banque1.banque1_api.client.AuthClient;
 import sn.banque1.banque1_api.dto.AuthenticateRequest;
+import sn.banque1.banque1_api.dto.ChangePinRequest;
 import sn.banque1.banque1_api.dto.CompteAuthResponse;
 import sn.banque1.banque1_api.dto.CompteRequest;
 import sn.banque1.banque1_api.dto.CompteResponse;
+import sn.banque1.banque1_api.dto.UpdateCompteRequest;
 import sn.banque1.banque1_api.exception.AuthenticationException;
 import sn.banque1.banque1_api.exception.BadRequestException;
+import sn.banque1.banque1_api.exception.ResourceNotFoundException;
 import sn.banque1.banque1_api.mapper.CompteMapper;
 import sn.banque1.banque1_api.model.Compte;
 import sn.banque1.banque1_api.service.CompteService;
@@ -78,6 +81,44 @@ public class CompteHelper {
         }
 
         return compte;
+    }
+
+    /**
+     * Met à jour prénom/nom/téléphone du compte identifié par le JWT courant.
+     * Si le téléphone change, invalide de fait le JWT en cours (son sujet ne
+     * correspond plus à aucun compte) : l'appelant devra se reconnecter.
+     */
+    public CompteResponse mettreAJourCompte(String telephoneActuel, UpdateCompteRequest request) {
+        Compte compte = compteService.findByTelephone(telephoneActuel)
+                .orElseThrow(() -> new ResourceNotFoundException("Compte introuvable"));
+
+        String nouveauTelephone = normalizeTelephone(request.getTelephone());
+        if (!nouveauTelephone.equals(compte.getTelephone())) {
+            compteService.findByTelephone(nouveauTelephone).ifPresent(c -> {
+                throw new BadRequestException("Ce numéro de téléphone existe déjà");
+            });
+            compte.setTelephone(nouveauTelephone);
+        }
+        compte.setPrenom(request.getPrenom());
+        compte.setNom(request.getNom());
+
+        return compteMapper.toResponse(compteService.save(compte));
+    }
+
+    /**
+     * Change le PIN du compte identifié par le JWT courant, après vérification
+     * de l'ancien PIN.
+     */
+    public void changerPin(String telephone, ChangePinRequest request) {
+        Compte compte = compteService.findByTelephone(telephone)
+                .orElseThrow(() -> new ResourceNotFoundException("Compte introuvable"));
+
+        if (!passwordEncoder.matches(request.getCurrentPin(), compte.getPin())) {
+            throw new AuthenticationException("PIN actuel incorrect");
+        }
+
+        compte.setPin(passwordEncoder.encode(request.getNewPin()));
+        compteService.save(compte);
     }
 
     private String normalizeTelephone(String telephone) {

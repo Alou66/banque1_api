@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -13,9 +14,12 @@ import lombok.RequiredArgsConstructor;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import sn.banque1.banque1_api.dto.ApiResponse;
 import sn.banque1.banque1_api.dto.AuthenticateRequest;
+import sn.banque1.banque1_api.dto.ChangePinRequest;
 import sn.banque1.banque1_api.dto.CompteAuthResponse;
 import sn.banque1.banque1_api.dto.CompteRequest;
 import sn.banque1.banque1_api.dto.CompteResponse;
+import sn.banque1.banque1_api.dto.UpdateCompteRequest;
+import sn.banque1.banque1_api.dto.VerifyPinRequest;
 import sn.banque1.banque1_api.helper.CompteHelper;
 
 @RestController
@@ -40,6 +44,33 @@ public class CompteController {
 
         CompteResponse response = compteHelper.trouverCompte(authentication.getName());
         return ResponseEntity.ok(new ApiResponse<>("Compte récupéré avec succés", response));
+    }
+
+    @PutMapping
+    public ResponseEntity<ApiResponse<CompteResponse>> mettreAJour(
+            @Valid @RequestBody UpdateCompteRequest request,
+            Authentication authentication) {
+
+        CompteResponse response = compteHelper.mettreAJourCompte(authentication.getName(), request);
+        return ResponseEntity.ok(new ApiResponse<>("Profil mis à jour avec succés", response));
+    }
+
+    @PostMapping("/verify-pin")
+    public ResponseEntity<ApiResponse<Void>> verifierPin(
+            @Valid @RequestBody VerifyPinRequest request,
+            Authentication authentication) {
+
+        compteHelper.verifierPin(authentication.getName(), request.getPin());
+        return ResponseEntity.ok(new ApiResponse<>("PIN vérifié avec succés", null));
+    }
+
+    @PostMapping("/change-pin")
+    public ResponseEntity<ApiResponse<Void>> changerPin(
+            @Valid @RequestBody ChangePinRequest request,
+            Authentication authentication) {
+
+        compteHelper.changerPin(authentication.getName(), request);
+        return ResponseEntity.ok(new ApiResponse<>("PIN modifié avec succés", null));
     }
 
     /**
