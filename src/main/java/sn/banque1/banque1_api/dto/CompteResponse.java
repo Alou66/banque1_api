@@ -16,5 +16,6 @@ public class CompteResponse {
     private String nom;
     private String adresse;
     private String telephone;
+    private String email;
     private boolean actif;
 }

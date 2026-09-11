@@ -22,6 +22,10 @@ public class CompteService {
         return compteRepository.findByTelephone(telephone);
     }
 
+    public Optional<Compte> findByEmail(String email) {
+        return compteRepository.findByEmail(email);
+    }
+
     // public Boolean existByTelephone(String telephone) {
     // return compteRepository.existByTelephone(telephone);
     // }

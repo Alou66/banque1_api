@@ -1,5 +1,6 @@
 package sn.banque1.banque1_api.dto;
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -21,6 +22,10 @@ public class CompteRequest {
     @NotBlank(message = "Le téléphone est obligatoire")
     @Pattern(regexp = "^(77|78|70)[0-9]{7}$", message = "Le téléphone doit commencer par 77, 78 ou 70 et contenir 9 chiffres au total")
     private String telephone;
+
+    @NotBlank(message = "L'email est obligatoire")
+    @Email(message = "L'email doit être valide")
+    private String email;
 
     @NotBlank(message = "Le pin est obligatoire")
     @Pattern(regexp = "^[0-9]{4}$", message = "Le pin doit contenir exactement 4 chiffres")

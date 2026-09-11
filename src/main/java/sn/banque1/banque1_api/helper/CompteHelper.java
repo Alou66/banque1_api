@@ -37,6 +37,10 @@ public class CompteHelper {
             throw new BadRequestException("Ce numéro de téléphone existe déjà");
         });
 
+        compteService.findByEmail(compteRequest.getEmail().trim().toLowerCase()).ifPresent(compte -> {
+            throw new BadRequestException("Cet email est déjà utilisé");
+        });
+
         Compte compte = compteMapper.toCompte(compteRequest);
         compte.setSolde(0);
         Compte c = compteService.save(compte);

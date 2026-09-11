@@ -22,6 +22,7 @@ public class CompteMapper {
         compte.setAdresse(request.getAdresse());
         compte.setNumPiece(request.getNumPiece());
         compte.setTelephone(normalizeTelephone(request.getTelephone()));
+        compte.setEmail(request.getEmail().trim().toLowerCase());
         compte.setPin(passwordEncoder.encode(request.getPin()));
         return compte;
     }
@@ -36,6 +37,7 @@ public class CompteMapper {
                 compte.getNom(),
                 compte.getAdresse(),
                 compte.getTelephone(),
+                compte.getEmail(),
                 compte.isActif());
     }
 

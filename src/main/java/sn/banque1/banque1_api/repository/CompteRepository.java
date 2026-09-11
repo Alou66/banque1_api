@@ -13,6 +13,8 @@ public interface CompteRepository extends JpaRepository<Compte, Long> {
 
     Optional<Compte> findByTelephone(String telephone);
 
+    Optional<Compte> findByEmail(String email);
+
     @Query("SELECT c FROM Compte c WHERE REPLACE(REPLACE(c.telephone, ' ', ''), '+', '') = :normalizedPhone")
     Optional<Compte> findByTelephoneNormalized(@Param("normalizedPhone") String normalizedPhone);
 }

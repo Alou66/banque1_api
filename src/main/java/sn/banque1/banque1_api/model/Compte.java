@@ -60,6 +60,9 @@ public class Compte {
     private String telephone;
 
     @Column(unique = true, nullable = false)
+    private String email;
+
+    @Column(unique = true, nullable = false)
     private String numPiece;
 
     @Column(nullable = false)
