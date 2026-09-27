@@ -1,6 +1,7 @@
 package sn.banque1.banque1_api.model;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -49,5 +50,11 @@ public class Transaction {
     // Ne pas inclure ce champ dans le JSON de réponse
     @JsonIgnore
     private Compte compte;
+
+    /** Clé d'idempotence fournie par le service appelant (gestion_service_api).
+     *  Permet de détecter les doubles appels (timeout/réessai) et d'éviter
+     *  les doubles débits. Unique par tentative de paiement. */
+    @Column(unique = true, updatable = false)
+    private UUID idempotencyKey;
 
 }

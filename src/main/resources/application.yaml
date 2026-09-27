@@ -29,7 +29,7 @@ springdoc:
     path: /swagger-ui.html
 
 server:
-  port: 8080
+  port: 8083
 
 # Doit être strictement identique à jwt.secret dans auth_api/application.yaml :
 # c'est auth_api qui émet les JWT, banque1_api se contente de les valider.

@@ -18,7 +18,8 @@ public class InternalApiKeyFilter extends OncePerRequestFilter {
     private static final String HEADER = "X-Internal-Api-Key";
     private static final List<String> PROTECTED_PATTERNS = List.of(
             "/api/comptes/authenticate",
-            "/api/transactions/paiement-externe"
+            "/api/transactions/paiement-externe",
+            "/api/transactions/paiement-externe/status"
     );
 
     private final AntPathMatcher pathMatcher = new AntPathMatcher();
