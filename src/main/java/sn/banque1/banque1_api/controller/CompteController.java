@@ -36,14 +36,14 @@ public class CompteController {
 
         CompteResponse response = compteHelper.creerCompte(request);
         URI uri = URI.create("/api/comptes/" + response.getId());
-        return ResponseEntity.created(uri).body(new ApiResponse<>("Compte créé avec succés", response));
+        return ResponseEntity.created(uri).body(new ApiResponse<>("Compte créé avec succès", response));
     }
 
     @GetMapping("/me")
     public ResponseEntity<ApiResponse<CompteResponse>> findMyCompte(Authentication authentication) {
 
         CompteResponse response = compteHelper.trouverCompte(authentication.getName());
-        return ResponseEntity.ok(new ApiResponse<>("Compte récupéré avec succés", response));
+        return ResponseEntity.ok(new ApiResponse<>("Compte récupéré avec succès", response));
     }
 
     @PutMapping
@@ -52,7 +52,7 @@ public class CompteController {
             Authentication authentication) {
 
         CompteResponse response = compteHelper.mettreAJourCompte(authentication.getName(), request);
-        return ResponseEntity.ok(new ApiResponse<>("Profil mis à jour avec succés", response));
+        return ResponseEntity.ok(new ApiResponse<>("Profil mis à jour avec succès", response));
     }
 
     @PostMapping("/verify-pin")
@@ -61,7 +61,7 @@ public class CompteController {
             Authentication authentication) {
 
         compteHelper.verifierPin(authentication.getName(), request.getPin());
-        return ResponseEntity.ok(new ApiResponse<>("PIN vérifié avec succés", null));
+        return ResponseEntity.ok(new ApiResponse<>("PIN vérifié avec succès", null));
     }
 
     @PostMapping("/change-pin")
@@ -70,7 +70,7 @@ public class CompteController {
             Authentication authentication) {
 
         compteHelper.changerPin(authentication.getName(), request);
-        return ResponseEntity.ok(new ApiResponse<>("PIN modifié avec succés", null));
+        return ResponseEntity.ok(new ApiResponse<>("PIN modifié avec succès", null));
     }
 
     /**

@@ -78,10 +78,12 @@ public class CompteHelper {
      */
     public Compte verifierPin(String telephone, String pin) {
         Compte compte = compteService.findByTelephone(normalizeTelephone(telephone))
-                .orElseThrow(() -> new AuthenticationException("Numéro de téléphone ou PIN incorrect"));
+                .orElseThrow(() -> new AuthenticationException(
+                        "Numéro de téléphone ou PIN incorrect"));
 
         if (!passwordEncoder.matches(pin, compte.getPin())) {
-            throw new AuthenticationException("Numéro de téléphone ou PIN incorrect");
+            throw new AuthenticationException(
+                    "Numéro de téléphone ou PIN incorrect");
         }
 
         return compte;

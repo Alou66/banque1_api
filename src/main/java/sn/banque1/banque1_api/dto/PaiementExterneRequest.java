@@ -5,9 +5,16 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.Getter;
 
+import java.math.BigDecimal;
+import java.util.UUID;
+
 /**
  * Requête de paiement initiée par un service tiers (ex. gestion_service_api)
  * pour le compte d'un client identifié par téléphone + PIN, sans session JWT.
+ *
+ * <p>Le champ {@code idempotencyKey} permet d'éviter les doubles débits : si
+ * le appel échoue (timeout), le client peut réessayer avec la même clé sans
+ * que le paiement ne soit traité deux fois.</p>
  */
 @Getter
 public class PaiementExterneRequest {
@@ -20,5 +27,13 @@ public class PaiementExterneRequest {
 
     @NotNull(message = "Le montant est obligatoire")
     @Positive(message = "Le montant doit etre positif")
-    private Long montant;
+    private BigDecimal amount;
+
+    private UUID serviceRequestId;
+
+    private String description;
+
+    /** Clé d'idempotence unique par tentative. */
+    private UUID idempotencyKey;
+
 }
